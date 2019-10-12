@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gitea.fullname" . }}
+  labels:
+{{ include "gitea.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "gitea.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "gitea.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "gitea.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+            - name: ssh
+              containerPort: 22
+              protocol: TCP
+          env:
+            - name: INSTALL_LOCK
+              value: "true"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gitea.fullname" . }}-secret-key
+                  key: SECRET_KEY
+            - name: APP_NAME
+              value: {{ .Values.options.appName | quote }}
+            - name: LFS_START_SERVER
+              value: {{ .Values.options.lfs | quote }}
+            - name: DISABLE_REGISTRATION
+              value: {{ .Values.options.disableRegistration | quote }}
+            - name: DISABLE_SSH
+              value: {{ .Values.options.disableSSH | quote }}
+            - name: RUN_MODE
+              value: {{ .Values.options.runMode | quote }}
+            {{- if .Values.ingress.enabled | quote }}
+            - name: ROOT_URL
+              value: {{ .Values.ingress.host | quote }}
+            - name: SSH_DOMAIN
+              value: {{ .Values.ingress.host | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- if .Values.persistentVolume.enabled }}
+          volumeMounts:
+            - name: data
+              path: /data
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.persistentVolume.enabled }}
+      volumes:
+        - name: data
+          persitentVolumeClaim:
+            claimName: {{ include "gitea.fullname" . }}-data-volume
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

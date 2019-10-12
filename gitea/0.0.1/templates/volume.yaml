@@ -1,0 +1,15 @@
+{{- if .Values.persistentVolume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "gitea.fullname" .}}-data-volume
+  labels:
+{{ include "gitea.labels" . | indent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Block
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolume.size | default "10" }}Gi
+{{- end }}
