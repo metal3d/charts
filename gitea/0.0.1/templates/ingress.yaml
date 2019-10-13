@@ -18,13 +18,11 @@ metadata:
 spec:
 {{- if .Values.ingress.tls }}
   tls:
-  {{- range .Values.ingress.tls }}
+    {{ with .Values.ingress }}
     - hosts:
-      {{- range .hosts }}
-        - {{ . | quote }}
-      {{- end }}
+        - {{ .host | quote }}
       secretName: {{ .secretName }}
-  {{- end }}
+    {{- end }}
 {{- end }}
 {{ with .Values.ingress }}
   rules:
@@ -34,5 +32,6 @@ spec:
           - path: /
             backend:
               serviceName: {{ $fullName }}
+              servicePort: http
 {{- end }}
 {{- end }}
