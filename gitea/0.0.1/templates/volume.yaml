@@ -8,7 +8,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  volumeMode: Block
+  volumeMode: FileSystem
   resources:
     requests:
       storage: {{ .Values.persistentVolume.size | default "10" }}Gi
