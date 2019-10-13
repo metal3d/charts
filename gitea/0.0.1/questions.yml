@@ -28,7 +28,7 @@ questions:
   type: boolean
   label: Enabled ingress
   default: false
-  show_subquestions_if: true
+  show_subquestion_if: true
   subquestions:
     - variable: ingress.host
       group: Ingress
