@@ -2,13 +2,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "gitea.fullname" .}}-data-volume
+  name: "{{ include "gitea.fullname" .}}-data-volume"
   labels:
 {{ include "gitea.labels" . | indent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
-  volumeMode: Filesystem
   resources:
     requests:
       storage: {{ .Values.persistentVolume.size | default "10" }}Gi
