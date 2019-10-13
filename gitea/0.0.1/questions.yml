@@ -28,10 +28,29 @@ questions:
   type: boolean
   label: Enabled ingress
   default: false
+  show_subquestions_if: "ingress.enabled=true"
+  subquestions:
+    - variable: ingress.host
+      group: Ingress
+      type: hostname
+      label: Hostname
+      default: ""
 
-- variable: ingress.host
-  group: Ingress
-  type: hostname
-  label: Hostname
-  default: ""
-  show_if: "ingress.enabled=true"
+    - variable: ingress.useTLS
+      group: Ingress
+      type: boolean
+      label: Use TLS
+
+    - variable: ingress.tls.secretName
+      group: Ingress
+      type: string
+      default: gitea-tls
+      show_if: "ingress.useTLS=true"
+      label: Secret name
+
+    - variable: ingress.tls.useCertBot
+      type: boolean
+      label: Use cert-bot
+      default: false
+      show_if: "ingress.useTLS=true"
+      label: Use cert-bot

@@ -55,10 +55,10 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   host: gitea.example.com
 
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  useTLS: false
+  tls: 
+    secretName: gitea-tls
+    useCertBot: false
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

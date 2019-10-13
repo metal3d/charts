@@ -56,7 +56,7 @@ spec:
               value: {{ .Values.options.runMode | quote }}
             {{- if .Values.ingress.enabled | quote }}
             - name: ROOT_URL
-              value: {{ .Values.ingress.host | quote }}
+              value: "http{{ if .Values.ingress.useTLS}}s{{end}}://{{ .Values.ingress.host }}"
             - name: SSH_DOMAIN
               value: {{ .Values.ingress.host | quote }}
             {{- end }}
@@ -79,7 +79,7 @@ spec:
       volumes:
         - name: data
           persitentVolumeClaim:
-            claimName: {{ include "gitea.fullname" . }}-data-volume
+            claimName: "{{ include "gitea.fullname" . }}-data-volume"
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
