@@ -79,7 +79,7 @@ spec:
       volumes:
         - name: data
           persitentVolumeClaim:
-            claimName: "{{ include "gitea.fullname" . }}-data-volume"
+            claimName: {{ include "gitea.fullname" . }}-data-volume
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

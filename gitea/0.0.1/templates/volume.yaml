@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "{{ include "gitea.fullname" .}}-data-volume"
+  name: {{ include "gitea.fullname" .}}-data-volume
   labels:
 {{ include "gitea.labels" . | indent 4 }}
 spec:
