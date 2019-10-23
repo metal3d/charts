@@ -2,7 +2,7 @@ apiVersion: v1
 appVersion: "1.9"
 description: Gitea in kubernetes 
 name: gitea
-version: 0.0.1
+version: 0.0.2
 icon: https://gitea.io/images/gitea.png
 home: https://gitea.io
 
