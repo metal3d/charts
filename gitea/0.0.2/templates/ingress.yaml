@@ -1,0 +1,43 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "gitea.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+{{ include "gitea.labels" . | indent 4 }}
+  annotations:
+    {{- if .Values.ingress.useTLS }}
+    {{- if .Values.ingress.tls.useCertBot }}
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+    {{- end }}
+    {{- end }}
+  {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.ingress.useTLS }}
+  tls:
+    {{- with .Values.ingress }}
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ .tls.secretName }}
+    {{- end }}
+{{- end }}
+{{- with .Values.ingress }}
+  rules:
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: http
+{{- end }}
+{{- end }}
