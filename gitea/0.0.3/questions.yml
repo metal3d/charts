@@ -1,0 +1,78 @@
+questions:
+
+- variable: options.appName
+  group: Gitea Options
+  type: string
+  label: Application name
+  default: Gitea
+  required: true
+  description: Application name that is displayed on web pages
+
+- variable: options.lfs
+  group: Gitea Options
+  type: boolean
+  label: Use LSF storage
+  default: true
+  description: Activate LFS storage for large files
+
+- variable: options.disableRegistration
+  group: Gitea Options
+  type: boolean
+  label: Disable registration
+  default: true
+  description: Do not allow user to register on Gitea
+
+- variable: options.disableSSH
+  group: Gitea Options
+  type: boolean
+  label: Disable SSH server
+  default: true
+  description: |
+      Disable SSH URLs, if set to "false", you will need to bind port
+      as Gitea is in a Pod.
+
+- variable: persistentVolume.enabled
+  group: Persistent Volume
+  type: boolean
+  default: false
+  label: Enable persistent storage
+
+- variable: persistentVolume.size
+  group: Persistent Volume
+  type: int
+  default: 10
+  label: Storage size
+  description: Size to set, in Gi
+  min: 1
+  show_if: "persistentVolume.enabled=true"
+
+- variable: ingress.enabled
+  group: Ingress
+  type: boolean
+  label: Enabled ingress
+  default: false
+  show_subquestion_if: true
+  subquestions:
+    - variable: ingress.host
+      group: Ingress
+      type: hostname
+      label: Hostname
+      default: ""
+
+    - variable: ingress.useTLS
+      group: Ingress
+      type: boolean
+      label: Use TLS
+
+    - variable: ingress.tls.secretName
+      group: Ingress
+      type: string
+      default: gitea-tls
+      show_if: "ingress.useTLS=true"
+      label: Secret name
+
+    - variable: ingress.tls.useCertBot
+      type: boolean
+      label: Use cert-bot
+      default: false
+      show_if: "ingress.useTLS=true"
